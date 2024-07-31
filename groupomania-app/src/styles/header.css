@@ -1,0 +1,21 @@
+.app-header {
+  background-color: #4CAF50;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+.app-header nav ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.app-header nav ul li {
+  display: inline;
+  margin: 0 15px;
+}
+
+.app-header nav ul li a {
+  color: white;
+  text-decoration: none;
+}

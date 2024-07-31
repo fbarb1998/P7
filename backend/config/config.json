@@ -1,0 +1,7 @@
+{
+  "development": {
+    "host": "viaduct.proxy.rlwy.net",
+    "port": 41957,
+    "dialect": "postgres"
+  }
+}
