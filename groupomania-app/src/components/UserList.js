@@ -1,28 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import { getUsers } from '../services/api';
+
+import ReactDOM from 'react-dom';
+import App from './App';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const UserList = () => {
-  const [users, setUsers] = useState([]);
+    const [users, setUsers] = useState([]);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const data = await getUsers();
-      setUsers(data);
-    };
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const response = await axios.get('http://localhost:5000/api/users');
+                setUsers(response.data);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+            }
+        };
 
-    fetchUsers();
-  }, []);
+        fetchUsers();
+    }, []);
 
-  return (
-    <div>
-      <h1>Users</h1>
-      <ul>
-        {users.map(user => (
-          <li key={user.id}>{user.name}</li>
-        ))}
-      </ul>
-    </div>
-  );
+    return (
+        <div>
+            <h1>User List</h1>
+            <ul>
+                {users.map(user => (
+                    <li key={user.id}>{user.username}</li>
+                ))}
+            </ul>
+        </div>
+    );
 };
 
 export default UserList;
+
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);

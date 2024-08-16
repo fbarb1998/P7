@@ -1,26 +1,32 @@
-import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import HomePage from './pages/HomePage';
-import UserProfilePage from './pages/UserProfilePage';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import './styles/App.css';
+const express = require('express');
+const bodyParser = require('body-parser');
 
-const App = () => {
-  return (
-    <Router>
-      <Header />
-      <Switch>
-        <Route path="/" exact component={HomePage} />
-        <Route path="/profile" component={UserProfilePage} />
-        <Route path="/login" component={LoginPage} />
-        <Route path="/register" component={RegisterPage} />
-      </Switch>
-      <Footer />
-    </Router>
-  );
-};
+const app = express();
+const path = require('path');
+const sequelize = require('./config/database');
+const userRoutes = require('./routes/user');
+// const postRoutes = require('./routes/post');
 
-export default App;
+
+app.use('/api/users', userRoutes);
+// app.use('/api/posts', postRoutes);
+
+sequelize.sync({ force: true })
+  .then(() => console.log('Database synced'))
+  .catch(err => console.log('Error: ' + err));
+
+
+// Middleware to handle CORS
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  next();
+});
+
+app.use(bodyParser.json());
+
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/api/auth', userRoutes);
+
+module.exports = app;

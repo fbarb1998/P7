@@ -1,19 +1,19 @@
-// src/pages/LoginPage.js
+// src/pages/SignUpPage.js
 import React, { useState } from 'react';
 
-const LoginPage = () => {
+const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle login logic here (e.g., API call)
-    console.log('Logging in with:', { email, password });
+    // Handle lignup logic here (e.g., API call)
+    console.log('Signing up with:', { email, password });
   };
 
   return (
     <div>
-      <h1>Login</h1>
+      <h1>Sign up</h1>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Email:</label>
@@ -33,10 +33,10 @@ const LoginPage = () => {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit">Sign up</button>
       </form>
     </div>
   );
 };
 
-export default LoginPage;
+export default SignUpPage;
