@@ -1,5 +1,6 @@
 // src/pages/HomePage.js
 import React from 'react';
+import Logo from '../Groupomania_Logos/icon-above-font.svg';
 
 const HomePage = () => {
   return (
