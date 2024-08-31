@@ -1,0 +1,37 @@
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    padding: 1rem;
+    color: white;
+  }
+  
+  .app-header h1 {
+    margin: 0;
+  }
+  
+  .app-header nav ul {
+    list-style: none;
+    display: flex;
+    gap: 1rem;
+  }
+  
+  .app-header nav ul li {
+    margin: 0;
+  }
+  
+  .app-header nav ul li a,
+  .app-header nav ul li button {
+    color: white;
+    text-decoration: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .app-header nav ul li button:hover,
+  .app-header nav ul li a:hover {
+    text-decoration: underline;
+  }
+  

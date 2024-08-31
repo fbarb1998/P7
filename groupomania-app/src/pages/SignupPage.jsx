@@ -1,42 +1,42 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import '../styles/Form.css'; // Import your custom styles
 
 const SignUpPage = () => {
-  const [firstName, setFirstName] = useState(''); // State for first name
-  const [lastName, setLastName] = useState('');   // State for last name
-  const [email, setEmail] = useState('');         // State for email
-  const [password, setPassword] = useState('');   // State for password
-  const [errorMessage, setErrorMessage] = useState(''); // State for error message
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Signing up with:', { firstName, lastName, email, password });
-
+    if (password !== confirmPassword) {
+      setErrorMessage('Passwords do not match.');
+      return;
+    }
     try {
-      const response = await axios.post('http://localhost:5000/api/signup', {
+      await axios.post('http://localhost:3000/api/auth/signup', {
         firstName,
         lastName,
         email,
         password
       });
-      console.log('Sign-up successful:', response.data);
-      navigate('/login'); // Redirect to the login page after successful sign-up
+      navigate('/login');
     } catch (error) {
-      console.error('Error signing up:', error);
       setErrorMessage('An error occurred during sign-up. Please try again.');
     }
   };
 
   return (
-    <div>
-      <h1>Sign up</h1>
-      {errorMessage && (
-        <p className="error">{errorMessage}</p>
-      )}
+    <div className="form-container">
+      <h1>Sign Up</h1>
+      {errorMessage && <p className="error">{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="form-group">
           <label>First Name:</label>
           <input
             type="text"
@@ -45,7 +45,7 @@ const SignUpPage = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Last Name:</label>
           <input
             type="text"
@@ -54,7 +54,7 @@ const SignUpPage = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Email:</label>
           <input
             type="email"
@@ -63,7 +63,7 @@ const SignUpPage = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Password:</label>
           <input
             type="password"
@@ -72,7 +72,16 @@ const SignUpPage = () => {
             required
           />
         </div>
-        <button type="submit">Sign up</button>
+        <div className="form-group">
+          <label>Confirm Password:</label>
+          <input
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className="btn">Sign Up</button>
       </form>
     </div>
   );

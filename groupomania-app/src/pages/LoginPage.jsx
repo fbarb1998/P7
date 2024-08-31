@@ -1,44 +1,35 @@
-import React, { useState } from 'react';
-import axios from 'axios'; // Import axios
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState, useContext } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import '../styles/Form.css'; // Import your custom styles
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState(''); // State for error message
-  const navigate = useNavigate(); // Initialize navigate hook
+  const [errorMessage, setErrorMessage] = useState('');
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Logging in with:', { email, password });
-
     try {
-      // Use axios to send a POST request for login
-      const response = await axios.post('http://localhost:5000/api/login', {
-        email,
-        password,
-      });
-
-      // Save user information to local storage if login is successful
+      const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
-
-      // Redirect to homepage after successful login
-      navigate('/home');
+      login(response.data.user);
+      navigate('/');
     } catch (error) {
-      console.error('Error logging in:', error);
-
-      // Show error message if login is unsuccessful
       setErrorMessage('Incorrect email or password. Please try again.');
     }
   };
 
   return (
-    <div>
+    <div className="form-container">
       <h1>Login</h1>
-      {errorMessage && <p className="error">{errorMessage}</p>} {/* Display error message */}
+      {errorMessage && <p className="error">{errorMessage}</p>}
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className="form-group">
           <label>Email:</label>
           <input
             type="email"
@@ -47,7 +38,7 @@ const LoginPage = () => {
             required
           />
         </div>
-        <div>
+        <div className="form-group">
           <label>Password:</label>
           <input
             type="password"
@@ -56,7 +47,7 @@ const LoginPage = () => {
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" className="btn">Login</button>
       </form>
     </div>
   );

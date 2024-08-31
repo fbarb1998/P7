@@ -4,16 +4,16 @@ const User = require('../models/user');
 
 // const { User } = require('../app');
 
-// Get all users
-const getUsers = async (req, res) => {
-  try {
-    const users = await User.findAll();
-    res.json(users);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
-  }
-};
+// // Get all users
+// const getUsers = async (req, res) => {
+//   try {
+//     const users = await User.findAll();
+//     res.json(users);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send('Server Error');
+//   }
+// };
 
 
 // Delete a user
@@ -36,7 +36,8 @@ const signup = async (req, res, next) => {
   bcrypt.hash(req.body.password, 10).then(
     (hash) => {
       const user = new User({
-        name: req.body.name,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
         email: req.body.email,
         password: hash
       });
