@@ -53,14 +53,14 @@ const signup = async (req, res, next) => {
           res.status(500).json({
             error: error.message
           });
+        }
+      );
     }
-  );
-}
   );
 };
 
-exports.login = (req, res, next) => {
-  User.findOne({ email: req.body.email }).then(
+const login = (req, res, next) => {
+  User.findOne({ where: { email: req.body.email } }).then(
     (user) => {
       if (!user) {
         return res.status(401).json({
@@ -100,7 +100,6 @@ exports.login = (req, res, next) => {
   );
 }
 module.exports = {
-  getUsers,
   signup,
-  deleteUser,
+  deleteUser, login
 };

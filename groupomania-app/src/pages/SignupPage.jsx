@@ -25,7 +25,7 @@ const SignUpPage = () => {
         email,
         password
       });
-      navigate('/login');
+      navigate(0);
     } catch (error) {
       setErrorMessage('An error occurred during sign-up. Please try again.');
     }

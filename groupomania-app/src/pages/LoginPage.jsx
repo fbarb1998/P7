@@ -18,7 +18,7 @@ const LoginPage = () => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
       login(response.data.user);
-      navigate('/');
+      navigate('/home');
     } catch (error) {
       setErrorMessage('Incorrect email or password. Please try again.');
     }
