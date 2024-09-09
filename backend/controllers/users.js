@@ -1,20 +1,6 @@
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs'); // Use bcryptjs instead of bcrypt for consistency
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
-
-// const { User } = require('../app');
-
-// // Get all users
-// const getUsers = async (req, res) => {
-//   try {
-//     const users = await User.findAll();
-//     res.json(users);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Server Error');
-//   }
-// };
-
+const User = require('../models/User'); // Ensure this path is correct
 
 // Delete a user
 const deleteUser = async (req, res) => {
@@ -32,74 +18,62 @@ const deleteUser = async (req, res) => {
   }
 };
 
-const signup = async (req, res, next) => {
-  bcrypt.hash(req.body.password, 10).then(
-    (hash) => {
-      const user = new User({
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        email: req.body.email,
-        password: hash
-      });
-      user.save().then(
-        () => {
-          res.status(201).json({
-            message: 'User added successfully!'
-          });
-        }
-      ).catch(
-        (error) => {
-          console.log(error)
-          res.status(500).json({
-            error: error.message
-          });
-        }
-      );
-    }
-  );
+// Signup function
+const signup = async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
+    
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    
+    // Create new user
+    const user = await User.create({
+      firstName,
+      lastName,
+      email,
+      password: hashedPassword,
+    });
+    
+    res.status(201).json({ message: 'User added successfully!', user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
 };
 
-const login = (req, res, next) => {
-  User.findOne({ where: { email: req.body.email } }).then(
-    (user) => {
-      if (!user) {
-        return res.status(401).json({
-          error: new Error('User not found!')
-        });
-      }
-      bcrypt.compare(req.body.password, user.password).then(
-        (valid) => {
-          if (!valid) {
-            return res.status(401).json({
-              error: new Error('Incorrect password!')
-            });
-          }
-          const token = jwt.sign(
-            { userId: user._id },
-            'RANDOM_TOKEN_SECRET',
-            { expiresIn: '24h' });
-          res.status(200).json({
-            userId: user._id,
-            token: token
-          });
-        }
-      ).catch(
-        (error) => {
-          res.status(500).json({
-            error: error
-          });
-        }
-      );
+// Login function
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    
+    // Find the user
+    const user = await User.findOne({ where: { email } });
+    if (!user) {
+      return res.status(401).json({ error: 'User not found!' });
     }
-  ).catch(
-    (error) => {
-      res.status(500).json({
-        error: error
-      });
+    
+    // Check the password
+    const valid = await bcrypt.compare(password, user.password);
+    if (!valid) {
+      return res.status(401).json({ error: 'Incorrect password!' });
     }
-  );
-}
+    
+    // Generate a token
+    const token = jwt.sign(
+      { userId: user.id }, // Use user.id instead of user._id for Sequelize
+      'RANDOM_TOKEN_SECRET',
+      { expiresIn: '24h' }
+    );
+    
+    res.status(200).json({ userId: user.id, token });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: error.message });
+  }
+};
+
 module.exports = {
   signup,
-  deleteUser, login
+  deleteUser,
+  login,
 };

@@ -1,12 +1,15 @@
+// src/App.jsx
+
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LandingPage from '../components/LandingPage';
-import HomePage from '../components/HomePage';
+import ForumPage from './ForumPage';
+import NewPostPage from './NewPostPage';
 import ProfilePage from '../components/ProfilePage';
+import LoginPage from './LoginPage'; 
 import { AuthProvider } from '../context/AuthContext';
 import '../styles/App.css'; // Adjust the path if needed
 import 'bootstrap/dist/css/bootstrap.min.css';
-
 
 const App = () => {
   return (
@@ -14,8 +17,10 @@ const App = () => {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/profile/:userId" element={<ProfilePage />} />
+          <Route path="/forum" element={<ForumPage />} />
+          <Route path="/new-post" element={<NewPostPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/login" element={<LoginPage />} />
         </Routes>
       </Router>
     </AuthProvider>

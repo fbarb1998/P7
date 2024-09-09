@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
-const { login, signup, } = require('../controllers/users');
+const { login, signup, deleteUser } = require('../controllers/users'); // Ensure deleteUser is imported
 
-// Routes
-// router.get('/users', getUsers);
+// Route for user signup
 router.post('/signup', signup);
+
+// Route for user login
 router.post('/login', login);
 
-// router.delete('/users/:id', deleteUser);
+// Route for deleting a user by ID
+router.delete('/users/:id', deleteUser);
 
 module.exports = router;

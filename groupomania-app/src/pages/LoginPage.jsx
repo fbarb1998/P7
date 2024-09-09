@@ -8,19 +8,23 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('userId', JSON.stringify(response.data.userId));
       login(response.data.user);
-      navigate('/home');
+      navigate('/forum');
     } catch (error) {
       setErrorMessage('Incorrect email or password. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -47,7 +51,9 @@ const LoginPage = () => {
             required
           />
         </div>
-        <button type="submit" className="btn">Login</button>
+        <button type="submit" className="btn" disabled={loading}>
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
       </form>
     </div>
   );

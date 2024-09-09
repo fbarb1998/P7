@@ -1,20 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-
-const app = express();
 const path = require('path');
 const sequelize = require('./config/database');
 const userRoutes = require('./routes/user');
-// const postRoutes = require('./routes/post');
+const postRoutes = require('./routes/post');
 
-
-app.use('/api/users', userRoutes);
-// app.use('/api/posts', postRoutes);
-
-sequelize.sync({ force: true })
-  .then(() => console.log('Database synced'))
-  .catch(err => console.log('Error: ' + err));
-
+const app = express();
 
 // Middleware to handle CORS
 app.use((req, res, next) => {
@@ -24,9 +15,25 @@ app.use((req, res, next) => {
   next();
 });
 
+// Middleware to parse JSON
 app.use(bodyParser.json());
 
+// Serve static files from the 'images' directory
 app.use('/images', express.static(path.join(__dirname, 'images')));
+
+// API Routes
 app.use('/api/auth', userRoutes);
+app.use('/api/posts', postRoutes);
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Something went wrong!' });
+});
+
+// Sync database
+sequelize.sync({ force: true })
+  .then(() => console.log('Database synced'))
+  .catch(err => console.log('Error: ' + err));
 
 module.exports = app;
