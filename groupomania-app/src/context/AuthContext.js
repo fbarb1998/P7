@@ -1,18 +1,15 @@
-import React, { createContext, useState } from 'react';
+// AuthContext.js
+import React, { createContext, useContext, useState } from 'react';
 
-// Create a context for authentication
 export const AuthContext = createContext();
 
-// AuthProvider component to wrap around the app
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null); // State to hold user data
+  const [user, setUser] = useState(null);
 
-  // Function to log in the user
   const login = (userData) => {
     setUser(userData);
   };
 
-  // Function to log out the user
   const logout = () => {
     setUser(null);
   };
@@ -23,3 +20,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => useContext(AuthContext);

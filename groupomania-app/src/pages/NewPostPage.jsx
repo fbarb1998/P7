@@ -1,10 +1,10 @@
-// src/pages/CreatePostPage.jsx
+// src/pages/NewPostPage.jsx
 
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const CreatePostPage = () => {
+const NewPostPage = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [media, setMedia] = useState(null);
@@ -20,15 +20,17 @@ const CreatePostPage = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
-    formData.append('media', media);
+    if (media) {
+      formData.append('media', media); // Add media if it exists
+    }
 
     try {
       await axios.post('http://localhost:3000/api/posts', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
-      navigate('/forum');
+      navigate('/forum'); // Redirect to the forum after successful post
     } catch (error) {
       console.error('Error creating post:', error);
     }
@@ -63,6 +65,7 @@ const CreatePostPage = () => {
             type="file"
             id="media"
             onChange={handleFileChange}
+            accept="image/*,video/*"
           />
         </div>
         <button type="submit">Submit</button>
@@ -71,4 +74,4 @@ const CreatePostPage = () => {
   );
 };
 
-export default CreatePostPage;
+export default NewPostPage;

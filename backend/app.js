@@ -19,7 +19,7 @@ app.use((req, res, next) => {
 app.use(bodyParser.json());
 
 // Serve static files from the 'images' directory
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API Routes
 app.use('/api/auth', userRoutes);

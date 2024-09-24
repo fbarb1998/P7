@@ -1,12 +1,20 @@
-// routes/post.js
+// routes/postRoutes.js
 const express = require('express');
 const router = express.Router();
-const upload = require('../middleware/multer');
-const postController = require('../controllers/post');
+const auth = require('../middleware/auth');
+const multer = require('../middleware/multer'); // Multer middleware for file upload
+const postController = require('../controllers/post'); // Ensure this path is correct
 
-// Define routes for posts
+// Fetch all posts
 router.get('/', postController.getPosts);
 
-router.post('/', upload, postController.createPost);
+// Create a new post
+router.post('/', auth, multer, postController.createPost);
+
+// Fetch a single post by ID
+router.get('/:id', postController.getPostById);
+
+// Mark a post as read
+router.put('/:id/read', postController.markPostAsRead);
 
 module.exports = router;

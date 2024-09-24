@@ -8,19 +8,10 @@ const storage = multer.diskStorage({
     cb(null, './uploads/');
   },
   filename: (req, file, cb) => {
-    // Define the filename for the uploaded file
+    // Define the filename for the uploaded file with timestamp to avoid name conflicts
     cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
   },
 });
-
-// Initialize upload
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10000000 }, // Set file size limit (10MB here)
-  fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
-  },
-}).single('media'); // 'media' is the name of the form field for file uploads
 
 // Function to check file type
 function checkFileType(file, cb) {
@@ -34,8 +25,17 @@ function checkFileType(file, cb) {
   if (mimetype && extname) {
     return cb(null, true);
   } else {
-    cb('Error: Images and Videos Only!');
+    cb('Error: Only images (jpeg, jpg, png, gif) and videos (mp4) are allowed!');
   }
 }
+
+// Initialize multer upload
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10000000 }, // Set file size limit to 10MB
+  fileFilter: (req, file, cb) => {
+    checkFileType(file, cb);
+  },
+}).single('media'); // 'media' is the name of the form field for file uploads
 
 module.exports = upload;

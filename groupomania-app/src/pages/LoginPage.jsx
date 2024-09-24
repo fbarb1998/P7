@@ -15,24 +15,35 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setErrorMessage(''); // Clear previous error messages
+
     try {
       const response = await axios.post('http://localhost:3000/api/auth/login', { email, password });
+      
+      // Storing the token and userId in local storage
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('userId', JSON.stringify(response.data.userId));
-      login(response.data.user);
+      
+      // Logging in and navigating to the forum page
+      login(response.data);
       navigate('/forum');
     } catch (error) {
+      // Set error message if credentials are incorrect
       setErrorMessage('Incorrect email or password. Please try again.');
     } finally {
-      setLoading(false);
+      setLoading(false); // Stop loading spinner
     }
   };
 
   return (
     <div className="form-container">
       <h1>Login</h1>
+
+      {/* Display error message */}
       {errorMessage && <p className="error">{errorMessage}</p>}
+
       <form onSubmit={handleSubmit}>
+        {/* Email input */}
         <div className="form-group">
           <label>Email:</label>
           <input
@@ -40,8 +51,11 @@ const LoginPage = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            placeholder="Enter your email"
           />
         </div>
+
+        {/* Password input */}
         <div className="form-group">
           <label>Password:</label>
           <input
@@ -49,8 +63,11 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            placeholder="Enter your password"
           />
         </div>
+
+        {/* Submit button */}
         <button type="submit" className="btn" disabled={loading}>
           {loading ? 'Logging in...' : 'Login'}
         </button>

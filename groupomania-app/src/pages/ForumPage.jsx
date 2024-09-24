@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';  // For navigating to full post details
 import axios from 'axios';
-import { Link } from 'react-router-dom';
 
 const ForumPage = () => {
   const [posts, setPosts] = useState([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [file, setFile] = useState(null);
-  const [editPostId, setEditPostId] = useState(null);
-  const [editContent, setEditContent] = useState('');
   const [error, setError] = useState('');
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     fetchPosts();
@@ -36,15 +35,17 @@ const ForumPage = () => {
     const formData = new FormData();
     formData.append('title', title);
     formData.append('content', content);
+    formData.append('userId', localStorage.getItem("userId"));
 
     if (file) {
-      formData.append('file', file);
+      formData.append('media', file);
     }
 
     try {
       await axios.post('http://localhost:3000/api/posts', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token}`
         },
       });
 
@@ -62,36 +63,11 @@ const ForumPage = () => {
     }
   };
 
-  const handleEditPost = async (postId) => {
-    if (!editContent.trim()) {
-      setError('Edited content cannot be empty.');
-      return;
-    }
-
-    try {
-      await axios.put(`http://localhost:3000/api/posts/${postId}`, { content: editContent });
-      setEditPostId(null);
-      setEditContent('');
-      fetchPosts(); // Refresh posts after editing
-    } catch (error) {
-      console.error('Error editing post:', error);
-      setError('Failed to edit post.');
-    }
-  };
-
-  const handleDeletePost = async (postId) => {
-    try {
-      await axios.delete(`http://localhost:3000/api/posts/${postId}`);
-      fetchPosts(); // Refresh posts after deletion
-    } catch (error) {
-      console.error('Error deleting post:', error);
-      setError('Failed to delete post.');
-    }
-  };
-
   return (
     <div style={{ padding: '20px' }}>
       <h1>Forum</h1>
+
+      {/* Post Form */}
       <form onSubmit={handlePost} style={{ marginBottom: '20px' }}>
         <div style={{ marginBottom: '10px' }}>
           <input
@@ -127,54 +103,21 @@ const ForumPage = () => {
         {error && <p style={{ color: 'red' }}>{error}</p>}
       </form>
 
+      {/* Display Posts */}
       <div>
         {posts.length > 0 ? (
           posts.map((post) => (
             <div key={post.id} style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ddd' }}>
-              {editPostId === post.id ? (
-                <>
-                  <textarea
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    style={{ width: '100%', height: '100px', padding: '10px' }}
-                  />
-                  <button
-                    onClick={() => handleEditPost(post.id)}
-                    style={{ marginTop: '10px', padding: '10px 20px', cursor: 'pointer' }}
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setEditPostId(null);
-                      setEditContent('');
-                    }}
-                    style={{ marginTop: '10px', marginLeft: '10px', padding: '10px 20px', cursor: 'pointer' }}
-                  >
-                    Cancel
-                  </button>
-                </>
-              ) : (
-                <>
-                  <h2>{post.title}</h2>
-                  <p>{post.content}</p>
-                  {post.mediaUrl && <img src={`http://localhost:3000${post.mediaUrl}`} alt={post.title} style={{ maxWidth: '100%' }} />}
-                  <button
-                    onClick={() => {
-                      setEditPostId(post.id);
-                      setEditContent(post.content);
-                    }}
-                    style={{ marginTop: '10px', padding: '10px 20px', cursor: 'pointer' }}
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDeletePost(post.id)}
-                    style={{ marginTop: '10px', marginLeft: '10px', padding: '10px 20px', cursor: 'pointer', backgroundColor: 'red', color: 'white' }}
-                  >
-                    Delete
-                  </button>
-                </>
+              {/* Show title and image only */}
+              <Link to={`/posts/${post.id}`}>
+                <h2>{post.title}</h2>
+              </Link>
+              {post.mediaUrl && (
+                <img
+                  src={`http://localhost:3000${post.mediaUrl}`}
+                  alt={post.title}
+                  style={{ maxWidth: '100%', marginTop: '10px' }}
+                />
               )}
             </div>
           ))

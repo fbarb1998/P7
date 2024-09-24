@@ -25,6 +25,7 @@ const SignUpPage = () => {
         email,
         password
       });
+      // FIXME navigate to login page
       navigate(0);
     } catch (error) {
       setErrorMessage('An error occurred during sign-up. Please try again.');
