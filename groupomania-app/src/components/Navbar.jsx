@@ -7,6 +7,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth(); // Access user state and logout function
   const navigate = useNavigate();
+  const authToken = localStorage.getItem('token'); // Fetch auth token from local storage
 
   const toggleNavbar = () => {
     setIsOpen(!isOpen);

@@ -8,51 +8,61 @@ const ProfilePage = () => {
   const [error, setError] = useState('');
   const [userData, setUserData] = useState(null);
 
-        const userId = localStorage.getItem('userId');
+  const userId = localStorage.getItem('userId');
+  const authToken = localStorage.getItem('token'); // Assuming auth token is stored
 
-  // useEffect(() => {
-  //   const fetchUserData = async () => {
-  //     try {
-  //       // Retrieve user ID from local storage
-  //       const userId = localStorage.getItem('userId');
+  // Check if authToken and userId exist
+  useEffect(() => {
+    if (!userId || !authToken) {
+      setError('User is not authenticated. Please log in.');
+      return;
+    }
+    fetchUserData();
+  }, [userId, authToken]);
 
-  //       if (!userId) {
-  //         throw new Error('User ID not found');
-  //       }
+  // Fetch user data from API
+  const fetchUserData = async () => {
+    setLoading(true);
+    try {
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
 
-  //       // Fetch user data from API
-  //       const response = await axios.get(`http://localhost:3000/api/users/${userId}`);
-  //       setUserData(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching user data:', error);
-  //       setError('Failed to fetch user data. Please try again.');
-  //     }
-  //   };
+      const response = await axios.get(`http://localhost:3000/api/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`, // Include auth token if needed
+        },
+      });
 
-  //   fetchUserData();
-  // });
+      setUserData(response.data);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      setError('Failed to fetch user data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleDelete = async () => {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       setLoading(true);
 
       try {
-        // Retrieve user ID from local storage
-        const userId = localStorage.getItem('userId');
-
         if (!userId) {
           throw new Error('User ID not found');
         }
 
-        // Send DELETE request to the API
-        // FIXME add auth token to delete request
-        await axios.delete(`http://localhost:3000/api/${userId}`);
+        await axios.delete(`http://localhost:3000/api/auth/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        });
 
-        // Clear user data from local storage
+        // Clear user data and token from local storage
         localStorage.removeItem('userId');
-        localStorage.removeItem('authToken'); // If you store auth tokens or other data
+        localStorage.removeItem('token');
 
-        // Log the user out and redirect to the signup page
+        // Redirect to signup page after account deletion
         navigate('/signup');
       } catch (error) {
         console.error('Error deleting account:', error);
@@ -69,10 +79,10 @@ const ProfilePage = () => {
       {loading && <p>Loading...</p>}
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {/* {userData ? ( */}
+      {userData ? (
         <div>
           {/* Display the profile picture */}
-          {/* <div style={{ marginBottom: '20px' }}>
+          <div style={{ marginBottom: '20px' }}>
             <img
               src={userData.profilePicture || 'default-profile-picture-url'}
               alt="Profile"
@@ -84,15 +94,17 @@ const ProfilePage = () => {
           <p><strong>Email:</strong> {userData.email}</p>
           <p><strong>About:</strong> {userData.about || 'No information provided'}</p>
           <p><strong>Total Posts:</strong> {userData.postsCount || 0}</p>
-          <p><strong>Total Likes:</strong> {userData.likesCount || 0}</p> */}
+          <p><strong>Total Likes:</strong> {userData.likesCount || 0}</p>
 
-          <button onClick={handleDelete} disabled={loading}>
-            {loading ? 'Deleting...' : 'Delete Account'}
-          </button>
+
         </div>
-       {/* ) : (
+      ) : (
         !loading && <p>No user data available.</p>
-     )} */}
+      )}
+      <button onClick={handleDelete} disabled={loading}>
+        {loading ? 'Deleting...' : 'Delete Account'}
+      </button>
+
     </div>
   );
 };

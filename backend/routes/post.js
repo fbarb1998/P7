@@ -15,6 +15,6 @@ router.post('/', auth, multer, postController.createPost);
 router.get('/:id', postController.getPostById);
 
 // Mark a post as read
-router.put('/:id/read', postController.markPostAsRead);
+router.post('/:id/read', postController.markPostAsRead);
 
 module.exports = router;

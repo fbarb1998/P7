@@ -18,6 +18,10 @@ const Post = sequelize.define('Post', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  readByUsers: {
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    allowNull: false,
+  },
 });
 
 module.exports = Post;

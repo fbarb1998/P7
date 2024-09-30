@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';  // For navigating to full post details
+import { Link } from 'react-router-dom'; // For navigating to full post details
 import axios from 'axios';
+import '../styles/ForumPage.css'; // Assuming you create a CSS file for styles
 
 const ForumPage = () => {
   const [posts, setPosts] = useState([]);
@@ -16,11 +17,15 @@ const ForumPage = () => {
 
   const fetchPosts = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/posts');
+      const response = await axios.get('http://localhost:3000/api/posts', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
       setPosts(response.data);
     } catch (error) {
       console.error('Error fetching posts:', error);
-      setError('Failed to load posts.');
+      setError('Failed to load posts. Please try again later.');
     }
   };
 
@@ -59,56 +64,49 @@ const ForumPage = () => {
       fetchPosts();
     } catch (error) {
       console.error('Error posting content:', error);
-      setError('Failed to post content.');
+      setError('Failed to post content. Please try again.');
     }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
+    <div className="forum-container">
       <h1>Forum</h1>
 
       {/* Post Form */}
-      <form onSubmit={handlePost} style={{ marginBottom: '20px' }}>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Title"
-            style={{ width: '100%', padding: '10px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Write something..."
-            style={{ width: '100%', height: '100px', padding: '10px' }}
-          />
-        </div>
-        <div style={{ marginBottom: '10px' }}>
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={{ width: '100%', padding: '10px' }}
-          />
-        </div>
+      <form onSubmit={handlePost} className="post-form">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="form-input"
+        />
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write something..."
+          className="form-textarea"
+        />
+        <input
+          type="file"
+          onChange={(e) => setFile(e.target.files[0])}
+          className="file-input"
+        />
         <button
           type="submit"
           disabled={!title.trim() || !content.trim()}
-          style={{ padding: '10px 20px', cursor: 'pointer' }}
+          className="post-button"
         >
           Post
         </button>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
+        {error && <p className="error-message">{error}</p>}
       </form>
 
       {/* Display Posts */}
-      <div>
+      <div className="posts-container">
         {posts.length > 0 ? (
           posts.map((post) => (
-            <div key={post.id} style={{ marginBottom: '20px', padding: '10px', border: '1px solid #ddd' }}>
-              {/* Show title and image only */}
+            <div key={post.id} className="post-card">
               <Link to={`/posts/${post.id}`}>
                 <h2>{post.title}</h2>
               </Link>
@@ -116,7 +114,7 @@ const ForumPage = () => {
                 <img
                   src={`http://localhost:3000${post.mediaUrl}`}
                   alt={post.title}
-                  style={{ maxWidth: '100%', marginTop: '10px' }}
+                  className="post-image"
                 />
               )}
             </div>
